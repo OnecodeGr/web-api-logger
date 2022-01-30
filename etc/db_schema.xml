@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="onecode_api_logger" resource="default" engine="innodb" comment="Onecode API logger">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true"
+                comment="Entity ID"/>
+        <column xsi:type="text" name="url_request" nullable="false" comment="Url Request"/>
+        <column xsi:type="json" name="request_data" nullable="true" comment="Request Data"/>
+        <column xsi:type="varchar" name="method_request" nullable="false" comment="Method Request"/>
+        <column xsi:type="varchar" name="api_type" nullable="false" comment="API Type"/>
+        <column xsi:type="varchar" name="api_user" nullable="true" comment="API User"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="ONECODE_API_USER_INDEX" indexType="btree">
+            <column name="api_user"/>
+        </index>
+        <index referenceId="ONECODE_API_TYPE_INDEX" indexType="btree">
+            <column name="api_type"/>
+        </index>
+    </table>
+</schema>

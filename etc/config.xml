@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * config.xml
+ *
+ * @copyright Copyright © 2022 Onecode  All rights reserved.
+ * @author    spyros@onecode.gr
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <onecode_api>
+            <general>
+                <active>1</active>
+                <cleanup_days>15</cleanup_days>
+                <accept_all_http_methods>1</accept_all_http_methods>
+                <user_to_track>anonymous</user_to_track>
+            </general>
+        </onecode_api>
+    </default>
+</config>

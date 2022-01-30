@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * di.xml
+ *
+ * @copyright Copyright © 2022 Onecode All rights reserved.
+ * @author    spyros@onecode.gr
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+  <type name="Magento\Framework\Console\CommandList">
+    <arguments>
+      <argument name="commands" xsi:type="array">
+        <item name="onecode:web:logger" xsi:type="object">Onecode\WebApiLogger\Console\Command\WebApiLog</item>
+      </argument>
+    </arguments>
+  </type>
+</config>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * onecode_api_logger_grid_block.xml
+ *
+ * @copyright Copyright © 2022 Onecode  All rights reserved.
+ * @author    spyros@onecode.gr
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+  <update handle="formkey"/>
+  <body>
+    <referenceBlock name="onecode_api_logger.grid.container">
+      <block class="Magento\Backend\Block\Widget\Grid" name="onecode_api_logger.grid"
+             as="grid">
+        <arguments>
+          <argument name="id" xsi:type="string">webapiLoggerGrid</argument>
+          <argument name="dataSource" xsi:type="object">Onecode\WebApiLogger\Model\ResourceModel\ApiLogger\Collection</argument>
+          <argument name="default_sort" xsi:type="string">id</argument>
+          <argument name="default_dir" xsi:type="string">asc</argument>
+          <argument name="save_parameters_in_session" xsi:type="boolean">1</argument>
+          <argument name="use_ajax" xsi:type="boolean">1</argument>
+          <argument name="grid_url" xsi:type="url" path="*/*/grid">
+            <param name="_current">1</param>
+          </argument>
+        </arguments>
+        <block class="Magento\Backend\Block\Widget\Grid\ColumnSet"
+               name="onecode_api_logger.grid.columnSet" as="grid.columnSet">
+          <arguments>
+            <argument name="rowUrl" xsi:type="array">
+              <item name="path" xsi:type="string">*/*/edit</item>
+              <item name="extraParamsTemplate" xsi:type="array">
+                <item name="id" xsi:type="string">getId</item>
+              </item>
+            </argument>
+          </arguments>
+          <block class="Magento\Backend\Block\Widget\Grid\Column" as="id">
+            <arguments>
+              <argument name="header" xsi:type="string" translate="true">
+                ID
+              </argument>
+              <argument name="type" xsi:type="string">number</argument>
+              <argument name="id" xsi:type="string">id</argument>
+              <argument name="index" xsi:type="string">id</argument>
+            </arguments>
+          </block>
+          <block class="Magento\Backend\Block\Widget\Grid\Column" as="url_request">
+            <arguments>
+              <argument name="header" xsi:type="string" translate="true">
+                Request Url
+              </argument>
+              <argument name="index" xsi:type="string">url_request</argument>
+            </arguments>
+          </block>
+          <block class="Magento\Backend\Block\Widget\Grid\Column" as="method_request">
+            <arguments>
+              <argument name="header" xsi:type="string" translate="true">
+                Request Data
+              </argument>
+              <argument name="index" xsi:type="string">method_request</argument>
+            </arguments>
+          </block>
+          <block class="Magento\Backend\Block\Widget\Grid\Column" as="api_type">
+            <arguments>
+              <argument name="header" xsi:type="string" translate="true">
+                API Type
+              </argument>
+              <argument name="index" xsi:type="string">api_type</argument>
+              <argument name="type" xsi:type="string">options</argument>
+              <argument name="options" xsi:type="options" model="Onecode\WebApiLogger\Model\System\Config\ApiType"/>
+            </arguments>
+          </block>
+          <block class="Magento\Backend\Block\Widget\Grid\Column" as="method_request">
+            <arguments>
+              <argument name="header" xsi:type="string" translate="true">
+                API Method Request
+              </argument>
+              <argument name="index" xsi:type="string">method_request</argument>
+              <argument name="type" xsi:type="string">options</argument>
+              <argument name="options" xsi:type="options" model="Onecode\WebApiLogger\Model\System\Config\MethodRequest"/>
+            </arguments>
+          </block>
+          <block class="Magento\Backend\Block\Widget\Grid\Column" as="api_user">
+            <arguments>
+              <argument name="id" xsi:type="string">api_user</argument>
+              <argument name="index" xsi:type="string">api_user</argument>
+              <argument name="header" xsi:type="string" translate="true">API User</argument>
+              <argument name="type" xsi:type="string">options</argument>
+              <argument name="options" xsi:type="options" model="Onecode\WebApiLogger\Model\System\Config\ApiUsers"/>
+            </arguments>
+          </block>
+          <block class="Magento\Backend\Block\Widget\Grid\Column" as="created_at">
+            <arguments>
+              <argument name="id" xsi:type="string">created_at</argument>
+              <argument name="header" xsi:type="string" translate="true">Created At</argument>
+              <argument name="type" xsi:type="string">datetime</argument>
+              <argument name="sortable" xsi:type="boolean">true</argument>
+              <argument name="index" xsi:type="string">created_at</argument>
+            </arguments>
+          </block>
+          <block class="Magento\Backend\Block\Widget\Grid\Column" as="action">
+            <arguments>
+              <argument name="id" xsi:type="string">action</argument>
+              <argument name="header" xsi:type="string" translate="true">Action</argument>
+              <argument name="type" xsi:type="string">action</argument>
+              <argument name="getter" xsi:type="string">getId</argument>
+              <argument name="filter" xsi:type="boolean">false</argument>
+              <argument name="sortable" xsi:type="boolean">false</argument>
+              <argument name="index" xsi:type="string">stores</argument>
+              <argument name="is_system" xsi:type="boolean">true</argument>
+              <argument name="actions" xsi:type="array">
+                <item name="view_action" xsi:type="array">
+                  <item name="caption" xsi:type="string" translate="true">View</item>
+                  <item name="url" xsi:type="array">
+                    <item name="base" xsi:type="string">*/*/edit</item>
+                  </item>
+                  <item name="field" xsi:type="string">id</item>
+                </item>
+              </argument>
+              <argument name="header_css_class" xsi:type="string">col-actions</argument>
+              <argument name="column_css_class" xsi:type="string">col-actions</argument>
+            </arguments>
+          </block>
+        </block>
+      </block>
+    </referenceBlock>
+  </body>
+</page>

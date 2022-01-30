@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+  <menu>
+    <add id="Onecode_WebApiLogger::webapi_logger"
+         title="Web API Logger"
+         module="Onecode_WebApiLogger"
+         parent="Onecode_Base::sidebar_base_menu"
+         sortOrder="100"
+         resource="Onecode_Base::menu"/>
+    <add id="Onecode_WebApiLogger::logger"
+         title="Web API Logger"
+         module="Onecode_WebApiLogger"
+         parent="Onecode_WebApiLogger::webapi_logger"
+         action="onecode_api/logger"
+         sortOrder="100"
+         resource="Magento_Backend::content"/>
+
+      <add id="Onecode_WebApiLogger::logger_settings"
+           title="Web API Logger Settings"
+           module="Onecode_WebApiLogger"
+           parent="Onecode_WebApiLogger::webapi_logger"
+           action="adminhtml/system_config/edit/section/onecode_api"
+           sortOrder="100"
+           resource="Onecode_WebApiLogger::config"/>
+  </menu>
+</config>

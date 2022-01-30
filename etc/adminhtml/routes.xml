@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @copyright Copyright © 2022 Onecode  All rights reserved.
+ * @author    spyros@onecode.gr
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+  <router id="admin">
+    <route id="onecode_api" frontName="onecode_api">
+      <module name="Onecode_WebApiLogger"/>
+    </route>
+  </router>
+</config>

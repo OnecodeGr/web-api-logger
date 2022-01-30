@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @copyright Copyright © 2022 Onecode  All rights reserved.
+ * @author    spyros@onecode.gr
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+  <update handle="formkey"/>
+  <update handle="onecode_api_logger_grid_block"/>
+  <referenceContainer name="content">
+    <block class="Onecode\WebApiLogger\Block\Adminhtml\Logger"
+           name="onecode_api_logger.grid.container"/>
+  </referenceContainer>
+</page>

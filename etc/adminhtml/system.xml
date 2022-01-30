@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * system.xml
+ *
+ * @copyright Copyright © 2022 Onecode  All rights reserved.
+ * @author    spyros@onecode.gr
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="onecode" sortOrder="10000" class="onecode-tab">
+            <label>Onecode Extensions</label>
+        </tab>
+        <section id="onecode_api" translate="label" type="text" sortOrder="1100" showInDefault="1" showInWebsite="0"
+                 showInStore="0">
+            <class>separator-top</class>
+            <label>Web API Logger</label>
+            <tab>onecode</tab>
+            <resource>Onecode_WebApiLogger::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
+                   showInStore="0">
+                <label>General</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0"
+                       showInStore="0"
+                       canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="cleanup_days" translate="label" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="0"
+                       showInStore="0"
+                       canRestore="1">
+                    <label>Clean Up</label>
+                    <comment>In days</comment>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="accept_all_http_methods" translate="label" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1" canRestore="1">
+                    <label>Accept all HTTP Method</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="selected_http_methods" translate="label" type="multiselect" sortOrder="40" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1" canRestore="1">
+                    <label>Select HTTP Methods</label>
+                    <source_model>Onecode\WebApiLogger\Model\Config\Source\HttpMethods</source_model>
+                    <depends>
+                        <field id="active">1</field>
+                        <field id="accept_all_http_methods">0</field>
+                    </depends>
+                </field>
+                <field id="user_to_track" translate="label" type="multiselect" sortOrder="40" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1" canRestore="1">
+                    <label>Select user you want to track</label>
+                    <source_model>Onecode\WebApiLogger\Model\Config\Source\UsersToTrack</source_model>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * module.xml
+ *
+ * @copyright Copyright © 2022 Onecode  All rights reserved.
+ * @author    spyros@onecode.gr
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+  <module name="Onecode_WebApiLogger" setup_version="1.0.0">
+    <sequence>
+      <module name="Onecode_Base"/>
+    </sequence>
+  </module>
+</config>
