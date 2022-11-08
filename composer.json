@@ -1,6 +1,6 @@
 {
     "name": "onecode/web-api-logger",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Track the api request per user",
     "type": "magento2-module",
     "require": {
