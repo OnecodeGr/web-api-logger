@@ -5,7 +5,8 @@
         <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true"
                 comment="Entity ID"/>
         <column xsi:type="text" name="url_request" nullable="false" comment="Url Request"/>
-        <column xsi:type="json" name="request_data" nullable="true" comment="Request Data"/>
+        <column xsi:type="longtext" name="request_data" nullable="true" comment="Request Data"/>
+        <column xsi:type="longtext" name="response_data" nullable="true" comment="Response Data"/>
         <column xsi:type="varchar" name="method_request" nullable="false" comment="Method Request"/>
         <column xsi:type="varchar" name="api_type" nullable="false" comment="API Type"/>
         <column xsi:type="varchar" name="api_user" nullable="true" comment="API User"/>

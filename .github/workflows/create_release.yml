@@ -20,7 +20,6 @@ jobs:
       run: |
        mkdir --verbose --parents  app/code/Onecode/ShopFlixConnector
        mv $(ls --ignore=app)  app/code/Onecode/ShopFlixConnector
-       echo "## Pre-requirements \n Require ShopFlixConnectoLibrary before installation run the command ``composer require onecode/shopflix-connector-library``" > README.md
     - name: Zip Folder
       run: zip -r ${{ github.event.repository.name }}.zip . -x ".git/*" ".github/*" "phpcs.xml" "composer.json" "composer.lock" ".gitignore" "app/code/Onecode/Base/.git/*" "app/code/Onecode/Base/.github/*" "Onecode/Base/.git" "Onecode/Base/.github"
     - name: Release

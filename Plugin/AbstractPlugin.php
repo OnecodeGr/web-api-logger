@@ -10,6 +10,7 @@ namespace Onecode\WebApiLogger\Plugin;
 
 use Magento\Framework\App\Request\Http;
 use Magento\Integration\Model\IntegrationFactory;
+use Onecode\WebApiLogger\Api\ApiLoggerRepositoryInterface;
 use Onecode\WebApiLogger\Helper\Data;
 use Onecode\WebApiLogger\Model\ApiLogger;
 use Magento\Integration\Model\Oauth\TokenFactory;
@@ -44,6 +45,10 @@ class AbstractPlugin
      * @var IntegrationFactory
      */
     private $_integrationFactory;
+    /**
+     * @var ApiLoggerRepositoryInterface
+     */
+    protected $apiLoggerRepository;
 
     /**
      * AbstractPlugin constructor.
@@ -55,11 +60,12 @@ class AbstractPlugin
      * @param IntegrationFactory $integrationFactory
      */
     public function __construct(
-        Data               $data,
-        ApiLogger          $apiLogger,
-        Http               $httpRequest,
-        TokenFactory       $tokenFactory,
-        IntegrationFactory $integrationFactory
+        Data                         $data,
+        ApiLogger                    $apiLogger,
+        Http                         $httpRequest,
+        TokenFactory                 $tokenFactory,
+        IntegrationFactory           $integrationFactory,
+        ApiLoggerRepositoryInterface $apiLoggerRepository
     )
     {
         $this->_dataHelper = $data;
@@ -67,6 +73,7 @@ class AbstractPlugin
         $this->_httpRequest = $httpRequest;
         $this->_tokenFactory = $tokenFactory;
         $this->_integrationFactory = $integrationFactory;
+        $this->apiLoggerRepository = $apiLoggerRepository;
     }
 
 
@@ -75,7 +82,7 @@ class AbstractPlugin
      *
      * @return string
      */
-    protected function convertContent($content)
+    protected function convertContent($content): string
     {
         switch ($this->_httpRequest->getHeader("Content-Type")) {
             case "application/json":
@@ -94,7 +101,7 @@ class AbstractPlugin
     /**
      * @return bool
      */
-    protected function isApiMethodAccepted()
+    protected function isApiMethodAccepted(): bool
     {
         if ($this->_dataHelper->getApiConfig(Data::CONFIG_ACCEPT_ALL_HTTP_METHODS)) {
             return true;
@@ -104,9 +111,9 @@ class AbstractPlugin
         return isset($selected[strtoupper($this->_httpRequest->getMethod())]);
     }
 
-    protected function canTrackUser()
+    protected function canTrackUser(): bool
     {
-        $users = explode(",",$this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_USER_TO_TRACK));
+        $users = explode(",", $this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_USER_TO_TRACK));
         return in_array($this->getIntegratedUser(), $users);
     }
 
@@ -114,7 +121,7 @@ class AbstractPlugin
     /**
      * @return string
      */
-    protected function getIntegratedUser()
+    protected function getIntegratedUser(): string
     {
         if ($accessToken = $this->getAccessToken()) {
             $token = $this->_tokenFactory->create()->loadByToken($accessToken);
@@ -171,7 +178,7 @@ class AbstractPlugin
     /**
      * @return string|null
      */
-    private function getAuthorizationHeader()
+    private function getAuthorizationHeader(): ?string
     {
         $headers = null;
         if (isset($_SERVER['Authorization'])) {

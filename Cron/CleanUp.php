@@ -10,9 +10,11 @@ namespace Onecode\WebApiLogger\Cron;
 
 
 use Exception;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Onecode\WebApiLogger\Api\ApiLoggerRepositoryInterface;
+use Onecode\WebApiLogger\Api\Data\ApiLoggerInterface;
 use Onecode\WebApiLogger\Helper\Data;
 use Onecode\WebApiLogger\Model\ApiLogger;
-use Onecode\WebApiLogger\Model\ResourceModel\ApiLogger\CollectionFactory;
 
 /**
  * Class CleanUp
@@ -23,19 +25,24 @@ class CleanUp
 
 
     private $_data;
-    private $collectionFactory;
-
     /**
-     * CleanUp constructor.
-     *
-     * @param ApiLogger $apiLogger
-     * @param Data $data
+     * @var ApiLoggerRepositoryInterface
      */
-    public function __construct(CollectionFactory $collectionFactory, Data $data)
-    {
+    private $apiLoggerRepository;
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
 
-        $this->collectionFactory = $collectionFactory;
+    public function __construct(
+        Data                         $data,
+        ApiLoggerRepositoryInterface $apiLoggerRepository,
+        SearchCriteriaBuilder        $searchCriteriaBuilder
+    )
+    {
         $this->_data = $data;
+        $this->apiLoggerRepository = $apiLoggerRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
 
     }
 
@@ -43,17 +50,19 @@ class CleanUp
     /**
      * @return bool
      */
-    public function execute()
+    public function execute(): bool
     {
         try {
             $days = $this->_data->getApiConfig("cleanup_days");
-            if($days > 0 ){
+            if ($days > 0) {
                 $dateTime = date('Y-m-d H:i:s', strtotime("-$days days"));
-                $collection = $this->collectionFactory->create()->addFieldToFilter("created_at", ["lt" => $dateTime]);
+                $this->searchCriteriaBuilder->addFilter(ApiLoggerInterface::CREATED_AT, $dateTime, "lt");
+                $searchCriteria = $this->searchCriteriaBuilder->create();
+                $collection = $this->apiLoggerRepository->getList($searchCriteria);
                 $collection->load(true);
                 /** @var ApiLogger $item */
                 foreach ($collection as $item) {
-                    $item->delete();
+                    $this->apiLoggerRepository->delete($item);
                 }
             }
 

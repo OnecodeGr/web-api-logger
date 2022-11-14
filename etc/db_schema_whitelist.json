@@ -1,0 +1,22 @@
+{
+    "onecode_api_logger": {
+        "column": {
+            "id": true,
+            "url_request": true,
+            "request_data": true,
+            "response_data": true,
+            "method_request": true,
+            "api_type": true,
+            "api_user": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "ONECODE_API_LOGGER_API_USER": true,
+            "ONECODE_API_LOGGER_API_TYPE": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

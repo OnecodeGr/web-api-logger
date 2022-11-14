@@ -25,29 +25,11 @@ use Magento\Framework\Registry;
  */
 class WebApiLog extends Command {
 	/**
-	 *
-	 */
-	const CRON = "cron";
-
-	/**
-	 * @var array
-	 */
-	protected $_commandValues = [
-		self::CRON => [
-			"clean_up",
-		],
-
-	];
-
-	/**
 	 * @var State
 	 */
 	private $_state;
 
-	/**
-	 * @var Registry
-	 */
-	private $_registry;
+
 
 	/**
 	 * WebApiLog constructor.
@@ -56,11 +38,9 @@ class WebApiLog extends Command {
 	 * @param Registry $registry
 	 * @param null     $name
 	 */
-	public function __construct ( State $state, Registry $registry, $name = null ) {
+	public function __construct ( State $state, $name = null ) {
 		parent::__construct( $name );
 		$this->_state    = $state;
-		$this->_registry = $registry;
-
 	}
 
 
@@ -69,22 +49,8 @@ class WebApiLog extends Command {
 	 */
 	protected function configure () {
 		parent::configure();
-		$this->setName( "onecode:web:logger" )
+		$this->setName( "onecode:web:logger:cleaner" )
 		     ->setDescription( "Onecode Web API Logger Commands" );
-		#->setDefinition( $this->getInputList() );
-		foreach ( $this->_commandValues as $command => $process ) {
-			$values        = "";
-			$process_count = 1;
-			foreach ( $process as $p ) {
-				$values .= sprintf( "%02d. ", $process_count ++ ) . $p . PHP_EOL;
-			}
-			$this->addOption(
-				$command,
-				$command[0],
-				InputOption::VALUE_REQUIRED,
-				$values
-			);
-		}
 	}
 
 
@@ -102,14 +68,7 @@ class WebApiLog extends Command {
 		} catch ( LocalizedException $e ) {
 			$this->_state->setAreaCode( Area::AREA_CRONTAB );
 		}
-		$this->_registry->register( 'isSecureArea', true );
-
-		switch ( $optionValue = $input->getOption( self::CRON ) ) {
-			case "01":
-			case "clean_up":
-				ObjectManager::getInstance()->create( CleanUp::class )->execute();
-				break;
-		}
+        ObjectManager::getInstance()->create( CleanUp::class )->execute();
 	}
 
 }
