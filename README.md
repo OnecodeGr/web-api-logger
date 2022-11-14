@@ -57,7 +57,7 @@ Login to the **Magento Admin**, navigate to `Store > Configuration > Onecode Ext
 
 **Accept all HTTP Method**: Select `Yes` to save on logger all the request you are getting or `No` to select which request you want to monitor
 
-[Imgur](https://i.imgur.com/dvECorT.png)
+![Imgur](https://i.imgur.com/dvECorT.png)
 
 **Select HTTP Methods**: Select which API methods do you want to monitor.
 
