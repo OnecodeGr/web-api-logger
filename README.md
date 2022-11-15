@@ -1,4 +1,4 @@
-# Monitor the magento 2 API REQUEST you are getting
+# Monitor the magento 2 API REQUEST you are getting [![GitHub version](https://badge.fury.io/gh/OnecodeGr%2Fweb-api-logger.svg)](https://badge.fury.io/gh/OnecodeGr%2Fweb-api-logger) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
 This extension is tracking the API request you are getting in your magento installation by user
 ## 1. How to install Onecode_WebApiLogger
 There are 2 ways to install the application via composer(recommended) or Copy and paste
