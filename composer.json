@@ -10,8 +10,7 @@
         "ext-json": "*"
     },
     "license": [
-        "OSL-3.0",
-        "AFL-3.0"
+        "MIT"
     ],
     "autoload": {
         "files": [
