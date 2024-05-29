@@ -108,7 +108,9 @@ class AbstractPlugin
         }
         $selected = $this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_HTTP_METHODS);
 
-        return isset($selected[strtoupper($this->_httpRequest->getMethod())]);
+        $requestMethod = strtoupper($this->_httpRequest->getMethod());
+        $selected =  explode(",", (string)$selected);
+        return in_array($requestMethod, $selected);
     }
 
     protected function canTrackUser(): bool
