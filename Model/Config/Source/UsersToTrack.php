@@ -3,7 +3,7 @@
  * UsersToTrack.php
  *
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    Spyros Bodinis {spyros@onecode.gr}
+ * @author     {support@onecde.gr}
  */
 
 namespace Onecode\WebApiLogger\Model\Config\Source;

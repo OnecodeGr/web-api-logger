@@ -4,7 +4,7 @@
  * system.xml
  *
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    spyros@onecode.gr
+ * @author    support@onecde.gr
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -67,6 +67,24 @@
                         <field id="active">1</field>
                     </depends>
 
+                </field>
+                <field id="log_rest" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0"
+                       showInStore="0"
+                       canRestore="1">
+                    <label>Log Rest Api</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="log_graphql" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0"
+                       showInStore="0"
+                       canRestore="1">
+                    <label>Log GraphQl Api</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="log_soap" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0"
+                       showInStore="0"
+                       canRestore="1">
+                    <label>Log Soap Api</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>

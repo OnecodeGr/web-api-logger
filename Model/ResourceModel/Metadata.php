@@ -3,7 +3,7 @@
  * Metadata.php
  *
  * @copyright Copyright © 2021 Onecode P.C. All rights reserved.
- * @author    Spyros Bodinis {spyros@onecode.gr}
+ * @author     {support@onecde.gr}
  */
 
 namespace Onecode\WebApiLogger\Model\ResourceModel;

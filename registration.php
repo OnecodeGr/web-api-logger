@@ -1,9 +1,7 @@
 <?php
 /**
- * ${FILE_NAME}
- *
- * @copyright Copyright © 2022 ${ORGANIZATION_NAME}  All rights reserved.
- * @author    Spyros Bodinis {spyros@onecode.gr}
+ * @copyright Copyright © 2022 Onecode P.C All rights reserved.
+ * @author {support@onecde.gr}
  */
 
 use Magento\Framework\Component\ComponentRegistrar;

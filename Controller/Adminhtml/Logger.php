@@ -1,61 +1,58 @@
 <?php
 /**
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    spyros@onecode.gr
+ * @author    support@onecde.gr
  */
 
 namespace Onecode\WebApiLogger\Controller\Adminhtml;
 
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\View\Result\PageFactory;
 use Magento\Backend\App\Action;
-use Onecode\WebApiLogger\Model\ApiLoggerFactory;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\Registry;
+use Magento\Framework\View\Result\PageFactory;
+use Onecode\WebApiLogger\Model\ApiLoggerFactory;
 
 /**
- * Class Index
- * @package Onecode\WebApiLogger\Controller\Adminhtml\Logger\Index
+ * Class Logger
+ * @package Onecode\WebApiLogger\Controller\Adminhtml
  */
-class Logger extends Action {
+class Logger extends Action
+{
+    public const ADMIN_RESOURCE = 'Onecode_WebApiLogger::logger_view';
 
+    /** @var PageFactory */
+    protected $_resultPageFactory;
 
-	/**
-	 * Index resultPageFactory
-	 * @var PageFactory
-	 */
-	protected $_resultPageFactory;
+    /** @var ApiLoggerFactory */
+    protected $_apiLoggerFactory;
 
-	/**
-	 * @var ApiLoggerFactory
-	 */
-	protected $_apiLoggerFactory;
+    /** @var Registry */
+    protected $_coreRegistry;
 
-	/**
-	 * @var Registry
-	 */
-	protected $_coreRegistry;
+    public function __construct(
+        Context          $context,
+        PageFactory      $resultPageFactory,
+        ApiLoggerFactory $apiLoggerFactory,
+        Registry         $registry
+    ) {
+        $this->_resultPageFactory = $resultPageFactory;
+        $this->_apiLoggerFactory  = $apiLoggerFactory;
+        $this->_coreRegistry      = $registry;
+        parent::__construct($context);
+    }
 
-	/**
-	 * Logger constructor.
-	 *
-	 * @param Context          $context
-	 * @param PageFactory      $resultPageFactory
-	 * @param ApiLoggerFactory $apiLoggerFactory
-	 * @param Registry         $registry
-	 */
-	public function __construct (
-		Context $context,
-		PageFactory $resultPageFactory,
-		ApiLoggerFactory $apiLoggerFactory,
-		Registry $registry
-	) {
-		$this->_resultPageFactory = $resultPageFactory;
-		$this->_apiLoggerFactory  = $apiLoggerFactory;
-		$this->_coreRegistry      = $registry;
-		parent::__construct( $context );
-	}
+    /**
+     * @return bool
+     */
+    protected function _isAllowed(): bool
+    {
+        return $this->_authorization->isAllowed(static::ADMIN_RESOURCE);
+    }
 
-
-	public function execute () {
-	}
+    /**
+     * Base execute — child classes override this.
+     */
+    public function execute()
+    {
+    }
 }

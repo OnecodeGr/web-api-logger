@@ -3,17 +3,19 @@
  * AbstractPlugin
  *
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    spyros@onecode.gr
+ * @author    support@onecde.gr
+ *
  */
 
 namespace Onecode\WebApiLogger\Plugin;
 
 use Magento\Framework\App\Request\Http;
 use Magento\Integration\Model\IntegrationFactory;
+use Magento\Integration\Model\Oauth\Token;
+use Magento\Integration\Model\Oauth\TokenFactory;
 use Onecode\WebApiLogger\Api\ApiLoggerRepositoryInterface;
 use Onecode\WebApiLogger\Helper\Data;
 use Onecode\WebApiLogger\Model\ApiLogger;
-use Magento\Integration\Model\Oauth\TokenFactory;
 
 /**
  * Class AbstractPlugin
@@ -22,43 +24,36 @@ use Magento\Integration\Model\Oauth\TokenFactory;
 class AbstractPlugin
 {
     /**
-     * @var Data
+     * Fields whose values must be replaced with [REDACTED] before storage.
+     * Add any sensitive field names your API uses.
      */
+    private const SENSITIVE_FIELDS = [
+        'password', 'current_password', 'new_password', 'confirm_password',
+        'token', 'access_token', 'refresh_token', 'api_key', 'secret',
+        'credit_card', 'card_number', 'cvv', 'cc_number', 'cc_cid',
+        'authorization', 'x-api-key',
+    ];
+
+    private const MAX_BODY_SIZE_BYTES = 65536; // 64 KB
+
+    /** @var Data */
     protected $_dataHelper;
 
-    /**
-     * @var ApiLogger
-     */
+    /** @var ApiLogger */
     protected $_apiLogger;
 
-    /**
-     * @var Http
-     */
+    /** @var Http */
     protected $_httpRequest;
 
-    /**
-     * @var TokenFactory
-     */
+    /** @var TokenFactory */
     private $_tokenFactory;
 
-    /**
-     * @var IntegrationFactory
-     */
+    /** @var IntegrationFactory */
     private $_integrationFactory;
-    /**
-     * @var ApiLoggerRepositoryInterface
-     */
+
+    /** @var ApiLoggerRepositoryInterface */
     protected $apiLoggerRepository;
 
-    /**
-     * AbstractPlugin constructor.
-     *
-     * @param Data $data
-     * @param ApiLogger $apiLogger
-     * @param Http $httpRequest
-     * @param TokenFactory $tokenFactory
-     * @param IntegrationFactory $integrationFactory
-     */
     public function __construct(
         Data                         $data,
         ApiLogger                    $apiLogger,
@@ -66,36 +61,73 @@ class AbstractPlugin
         TokenFactory                 $tokenFactory,
         IntegrationFactory           $integrationFactory,
         ApiLoggerRepositoryInterface $apiLoggerRepository
-    )
-    {
-        $this->_dataHelper = $data;
-        $this->_apiLogger = $apiLogger;
-        $this->_httpRequest = $httpRequest;
-        $this->_tokenFactory = $tokenFactory;
+    ) {
+        $this->_dataHelper         = $data;
+        $this->_apiLogger          = $apiLogger;
+        $this->_httpRequest        = $httpRequest;
+        $this->_tokenFactory       = $tokenFactory;
         $this->_integrationFactory = $integrationFactory;
         $this->apiLoggerRepository = $apiLoggerRepository;
     }
 
-
     /**
-     * @param $content
+     * Convert request/response body to a readable format,
+     * then mask sensitive fields and truncate if too large.
      *
+     * @param string $content
      * @return string
      */
-    protected function convertContent($content): string
+    protected function convertContent(string $content): string
     {
-        switch ($this->_httpRequest->getHeader("Content-Type")) {
-            case "application/json":
-                return json_encode(json_decode($content, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            case "application/xml":
-            case "text/xml":
-            case "text/html":
-            case "application/javascript":
-            case "text/plain":
-            default:
-                return $content;
+        if (strlen($content) > self::MAX_BODY_SIZE_BYTES) {
+            $content = substr($content, 0, self::MAX_BODY_SIZE_BYTES)
+                . PHP_EOL."[... TRUNCATED: body exceeded " . self::MAX_BODY_SIZE_BYTES . " bytes ...]";
         }
 
+        $contentType = $this->_httpRequest->getHeader('Content-Type') ?? '';
+
+        if (str_contains($contentType, 'application/json')) {
+            $decoded = json_decode($content, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $decoded = $this->maskSensitiveData($decoded);
+                return (string) json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            }
+        }
+        return $this->maskSensitivePatterns($content);
+    }
+
+    /**
+     *
+     * @param array $data
+     * @return array
+     */
+    private function maskSensitiveData(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->maskSensitiveData($value);
+            } elseif (in_array(strtolower((string) $key), self::SENSITIVE_FIELDS, true)) {
+                $data[$key] = '[REDACTED]';
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * @param string $content
+     * @return string
+     */
+    private function maskSensitivePatterns(string $content): string
+    {
+        foreach (self::SENSITIVE_FIELDS as $field) {
+            // Covers: password=value, <password>value</password>, "password":"value"
+            $content = preg_replace(
+                '/(' . preg_quote($field, '/') . '["\s]*[=:>]+["\s]*)([^<&"\s,}]+)/i',
+                '$1[REDACTED]',
+                $content
+            );
+        }
+        return $content;
     }
 
     /**
@@ -106,100 +138,106 @@ class AbstractPlugin
         if ($this->_dataHelper->getApiConfig(Data::CONFIG_ACCEPT_ALL_HTTP_METHODS)) {
             return true;
         }
-        $selected = $this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_HTTP_METHODS);
-
+        $selected      = (string) $this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_HTTP_METHODS);
         $requestMethod = strtoupper($this->_httpRequest->getMethod());
-        $selected =  explode(",", (string)$selected);
-        return in_array($requestMethod, $selected);
+        return in_array($requestMethod, explode(',', $selected), true);
     }
-
-    protected function canTrackUser(): bool
-    {
-        $users = explode(",", $this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_USER_TO_TRACK));
-        return in_array($this->getIntegratedUser(), $users);
-    }
-
 
     /**
+     * @return bool
+     */
+    protected function canTrackUser(): bool
+    {
+        $configured = (string) $this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_USER_TO_TRACK);
+        $users      = array_filter(array_map('trim', explode(',', $configured)));
+
+        // Empty list means "track all users"
+        if (empty($users)) {
+            return true;
+        }
+
+        return in_array($this->getIntegratedUser(), $users, true);
+    }
+
+    /**
+     *
      * @return string
      */
     protected function getIntegratedUser(): string
     {
-        if ($accessToken = $this->getAccessToken()) {
-            $token = $this->_tokenFactory->create()->loadByToken($accessToken);
-            if ($consumerId = $token->getConsumerId()) {
-                $integration = $this->_integrationFactory->create()->loadByConsumerId($consumerId);
-
-                return $integration->getName();
-            }
-        }
-
-        return "anonymous";
-
-    }
-
-
-    /**
-     * @return mixed|null
-     */
-    private function getAccessToken()
-    {
-        $accessToken = $this->_httpRequest->getParam("oauth_token", false);
+        $accessToken = $this->getAccessToken();
         if (!$accessToken) {
-            $accessToken = $this->getHeaderToken();
+            return 'anonymous';
         }
 
-        return $accessToken;
+        /** @var Token $token */
+        $token = $this->_tokenFactory->create()->loadByToken($accessToken);
 
+        if (!$token->getId()) {
+            return 'anonymous';
+        }
 
+        // OAuth integration token
+        if ($consumerId = $token->getConsumerId()) {
+            $integration = $this->_integrationFactory->create()->loadByConsumerId($consumerId);
+            return $integration->getName() ?: 'integration_unknown';
+        }
+
+        $tokenType = $token->getCustomerToken() ? 'customer' : 'admin';
+        $userId    = $token->getCustomerId() ?: $token->getAdminId();
+        if ($userId) {
+            return $tokenType . ':' . $userId;
+        }
+
+        return 'anonymous';
     }
 
     /**
-     * get access token from header
-     * */
-    private function getHeaderToken()
+     * @return string|null
+     */
+    private function getAccessToken(): ?string
     {
-        $headers = $this->getAuthorizationHeader();
-        // HEADER: Get the access token from the header
-        if (!empty($headers)) {
-            if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
-                return $matches[1];
-            } elseif (preg_match('/OAuth\s(\S+)/', $headers, $matches)) {
-                foreach (explode(",", $matches[1]) as $value) {
-                    list($key, $data) = explode("=", $value);
-                    if ($key == "oauth_token") {
-                        return str_ireplace(["\"", "'"], "", $data);
-                    }
+        // Try query string (OAuth 1.0)
+        $accessToken = $this->_httpRequest->getParam('oauth_token', null);
+        if ($accessToken) {
+            return (string) $accessToken;
+        }
+
+        return $this->getHeaderToken();
+    }
+
+    /**
+     *
+     * @return string|null
+     */
+    private function getHeaderToken(): ?string
+    {
+
+        $authHeader = $this->_httpRequest->getHeader('Authorization');
+
+        if (empty($authHeader)) {
+            return null;
+        }
+
+        // Bearer token (customer/admin JWT)
+        if (preg_match('/Bearer\s(\S+)/i', $authHeader, $matches)) {
+            return $matches[1];
+        }
+
+        // OAuth 1.0 header
+        if (preg_match('/OAuth\s(\S+)/i', $authHeader, $matches)) {
+            foreach (explode(',', $matches[1]) as $part) {
+                $part = trim($part);
+                if (strpos($part, '=') === false) {
+                    continue;
+                }
+                [$key, $value] = explode('=', $part, 2);
+                if (trim($key) === 'oauth_token') {
+                    return trim($value, " \"'\t");
                 }
             }
         }
 
         return null;
     }
-
-    /**
-     * @return string|null
-     */
-    private function getAuthorizationHeader(): ?string
-    {
-        $headers = null;
-        if (isset($_SERVER['Authorization'])) {
-            $headers = trim($_SERVER["Authorization"]);
-        } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
-            $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
-        } elseif (function_exists('apache_request_headers')) {
-            $requestHeaders = apache_request_headers();
-            // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
-            $requestHeaders =
-                array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-            //print_r($requestHeaders);
-            if (isset($requestHeaders['Authorization'])) {
-                $headers = trim($requestHeaders['Authorization']);
-            }
-        }
-
-        return $headers;
-    }
-
-
 }

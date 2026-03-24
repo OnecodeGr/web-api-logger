@@ -3,7 +3,7 @@
  * ApiType
  *
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    spyros@onecode.gr
+ * @author    support@onecde.gr
  */
 
 namespace Onecode\WebApiLogger\Model\System\Config;

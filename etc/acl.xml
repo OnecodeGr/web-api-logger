@@ -4,7 +4,7 @@
  * acl.xml
  *
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    spyros@onecode.gr
+ * @author    support@onecde.gr
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
@@ -14,9 +14,15 @@
               <resource id="Magento_Backend::stores">
                 <resource id="Magento_Backend::stores_settings">
                   <resource id="Magento_Config::config">
-                    <resource id="Onecode_WebApiLogger::config"
-                              title="Web API Logger"
-                              sortOrder="120" />
+                      <resource id="Onecode_Base::config">
+                          <resource id="Onecode_WebApiLogger::config"
+                                    title="Web API Logger"
+                                    sortOrder="120" >
+                              <resource id="Onecode_WebApiLogger::config"
+                                        title="Web Api Logger Grid View"
+                                        sortOrder="100">
+                          </resource>
+                      </resource>
                   </resource>
                 </resource>
               </resource>

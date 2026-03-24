@@ -4,7 +4,7 @@
  * config.xml
  *
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    spyros@onecode.gr
+ * @author    support@onecde.gr
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,6 +16,9 @@
                 <cleanup_days>15</cleanup_days>
                 <accept_all_http_methods>1</accept_all_http_methods>
                 <user_to_track>anonymous</user_to_track>
+                <log_rest>1</log_rest>
+                <log_soap>0</log_soap>
+                <log_graphql>0</log_graphql>
             </general>
         </onecode_api>
     </default>

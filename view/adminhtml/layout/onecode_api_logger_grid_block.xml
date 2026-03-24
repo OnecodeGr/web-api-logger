@@ -4,7 +4,7 @@
  * onecode_api_logger_grid_block.xml
  *
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    spyros@onecode.gr
+ * @author    support@onecde.gr
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -18,7 +18,7 @@
           <argument name="id" xsi:type="string">webapiLoggerGrid</argument>
           <argument name="dataSource" xsi:type="object">Onecode\WebApiLogger\Model\ResourceModel\ApiLogger\Collection</argument>
           <argument name="default_sort" xsi:type="string">id</argument>
-          <argument name="default_dir" xsi:type="string">asc</argument>
+          <argument name="default_dir" xsi:type="string">desc</argument>
           <argument name="save_parameters_in_session" xsi:type="boolean">1</argument>
           <argument name="use_ajax" xsi:type="boolean">1</argument>
           <argument name="grid_url" xsi:type="url" path="*/*/grid">

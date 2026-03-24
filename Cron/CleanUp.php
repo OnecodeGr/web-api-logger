@@ -3,14 +3,15 @@
  * CleanUp
  *
  * @copyright Copyright © 2022 Onecode  All rights reserved.
- * @author    spyros@onecode.gr
+ * @author    support@onecde.gr
+ *
  */
 
 namespace Onecode\WebApiLogger\Cron;
 
-
 use Exception;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Psr\Log\LoggerInterface;
 use Onecode\WebApiLogger\Api\ApiLoggerRepositoryInterface;
 use Onecode\WebApiLogger\Api\Data\ApiLoggerInterface;
 use Onecode\WebApiLogger\Helper\Data;
@@ -22,30 +23,31 @@ use Onecode\WebApiLogger\Model\ApiLogger;
  */
 class CleanUp
 {
+    private const BATCH_SIZE = 500;
 
-
+    /** @var Data */
     private $_data;
-    /**
-     * @var ApiLoggerRepositoryInterface
-     */
+
+    /** @var ApiLoggerRepositoryInterface */
     private $apiLoggerRepository;
-    /**
-     * @var SearchCriteriaBuilder
-     */
+
+    /** @var SearchCriteriaBuilder */
     private $searchCriteriaBuilder;
+
+    /** @var LoggerInterface */
+    private $logger;
 
     public function __construct(
         Data                         $data,
         ApiLoggerRepositoryInterface $apiLoggerRepository,
-        SearchCriteriaBuilder        $searchCriteriaBuilder
-    )
-    {
-        $this->_data = $data;
-        $this->apiLoggerRepository = $apiLoggerRepository;
+        SearchCriteriaBuilder        $searchCriteriaBuilder,
+        LoggerInterface              $logger
+    ) {
+        $this->_data                 = $data;
+        $this->apiLoggerRepository   = $apiLoggerRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-
+        $this->logger                = $logger;
     }
-
 
     /**
      * @return bool
@@ -53,24 +55,56 @@ class CleanUp
     public function execute(): bool
     {
         try {
-            $days = $this->_data->getApiConfig("cleanup_days");
-            if ($days > 0) {
-                $dateTime = date('Y-m-d H:i:s', strtotime("-$days days"));
-                $this->searchCriteriaBuilder->addFilter(ApiLoggerInterface::CREATED_AT, $dateTime, "lt");
-                $searchCriteria = $this->searchCriteriaBuilder->create();
+
+            $days = (int) $this->_data->getApiConfig(Data::CONFIG_CLEAN_UP_DAYS);
+
+            if ($days <= 0) {
+                return true; // cleanup disabled
+            }
+
+            $cutoffDate = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+
+
+            $deleted = 0;
+            do {
+                $this->searchCriteriaBuilder
+                    ->addFilter(ApiLoggerInterface::CREATED_AT, $cutoffDate, 'lt');
+
+                $searchCriteria = $this->searchCriteriaBuilder
+                    ->setPageSize(self::BATCH_SIZE)
+                    ->setCurrentPage(1)
+                    ->create();
+
                 $collection = $this->apiLoggerRepository->getList($searchCriteria);
-                $collection->load(true);
-                /** @var ApiLogger $item */
-                foreach ($collection as $item) {
-                    $this->apiLoggerRepository->delete($item);
+                $items      = $collection->getItems();
+
+                if (empty($items)) {
+                    break;
                 }
+
+                /** @var ApiLogger $item */
+                foreach ($items as $item) {
+                    $this->apiLoggerRepository->delete($item);
+                    $deleted++;
+                }
+
+            } while (count($items) === self::BATCH_SIZE);
+
+            if ($deleted > 0) {
+                $this->logger->info(
+                    "WebApiLogger CleanUp: deleted {$deleted} records older than {$days} days."
+                );
             }
 
         } catch (Exception $e) {
+            $this->logger->error(
+                'WebApiLogger CleanUp failed: ' . $e->getMessage(),
+                ['exception' => $e]
+            );
 
+            return false;
         }
 
         return true;
     }
-
 }
