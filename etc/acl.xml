@@ -18,7 +18,7 @@
                           <resource id="Onecode_WebApiLogger::config"
                                     title="Web API Logger"
                                     sortOrder="120" >
-                              <resource id="Onecode_WebApiLogger::config"
+                              <resource id="Onecode_WebApiLogger::grid"
                                         title="Web Api Logger Grid View"
                                         sortOrder="100">
                           </resource>
